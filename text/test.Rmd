@@ -1,0 +1,37 @@
+---
+title: "test"
+author: "Ranae Dietzel"
+date: "September 28, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)  
+
+library(ggplot2)
+library(ggmap)
+library(maps)
+library(mapdata)
+library(dplyr)
+library(stringr)
+library(devtools)
+library(readr)
+```
+##Previous Nature model  
+ <center><img src="../figures/WagnerRiddleCurves.png" width="500px"/></center>  
+ 
+##USDA-ARS Data  
+```{r map of data}  
+ars <- read_csv("../data/ars/ars_latlong.csv")%>%
+  select(`Experimental Unit`, `Latitude of weather station, decimal degrees`, 
+         `Longitude of weather station, decimal degrees`)%>%
+  rename(name = `Experimental Unit`, lon = `Longitude of weather station, decimal degrees`, lat = `Latitude of weather station, decimal degrees`)
+
+ars_box <- make_bbox(lon = ars$lon, lat = ars$lat, f = .1)
+
+sq_map <- get_map(location = ars_box, maptype = "toner", source = "stamen")
+
+ggmap(sq_map) + 
+  geom_point(data = ars, mapping = aes(x = lon, y = lat), color = "red", size = 3.5)+
+geom_point(data = ars, mapping = aes(x = lon, y = lat), color = "grey", size = 3.0)  
+```
